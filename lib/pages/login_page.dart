@@ -1,8 +1,10 @@
+
 import 'package:flutter/material.dart';
 import '../app_data.dart';
 import '../constants/app_colors.dart';
 import '../services/auth_service.dart';
 import '../widgets/custom_text_field.dart';
+import 'inscription_page.dart';
 
 class LoginPage extends StatefulWidget {
   final AuthService authService;
@@ -24,6 +26,7 @@ class _LoginPageState extends State<LoginPage> {
   final _passwordController = TextEditingController();
 
   bool _obscurePassword = true;
+  bool _isLoading = false;
   String? _errorMessage;
 
   @override
@@ -33,16 +36,26 @@ class _LoginPageState extends State<LoginPage> {
     super.dispose();
   }
 
-  void _handleLogin() {
+  // Connexion à l'API PHP
+  Future<void> _handleLogin() async {
     final isValid = _formKey.currentState?.validate() ?? false;
-    if (!isValid) return;
 
-    final error = widget.authService.login(
+    if (!isValid || _isLoading) return;
+
+    setState(() {
+      _isLoading = true;
+      _errorMessage = null;
+    });
+
+    final error = await widget.authService.login(
       identifier: _identifierController.text,
       password: _passwordController.text,
     );
 
+    if (!mounted) return;
+
     setState(() {
+      _isLoading = false;
       _errorMessage = error;
     });
 
@@ -59,14 +72,20 @@ class _LoginPageState extends State<LoginPage> {
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
-            colors: [AppColors.primaryDarkBlue, AppColors.backgroundLight],
+            colors: [
+              AppColors.primaryDarkBlue,
+              AppColors.backgroundLight,
+            ],
             stops: [0.0, 0.42],
           ),
         ),
         child: SafeArea(
           child: Center(
             child: SingleChildScrollView(
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
+              padding: const EdgeInsets.symmetric(
+                horizontal: 20,
+                vertical: 24,
+              ),
               child: ConstrainedBox(
                 constraints: const BoxConstraints(maxWidth: 440),
                 child: Column(
@@ -91,7 +110,9 @@ class _LoginPageState extends State<LoginPage> {
                         color: AppColors.primaryDarkBlue,
                       ),
                     ),
+
                     const SizedBox(height: 14),
+
                     const Text(
                       AppData.appName,
                       style: TextStyle(
@@ -101,7 +122,9 @@ class _LoginPageState extends State<LoginPage> {
                         letterSpacing: 0.4,
                       ),
                     ),
+
                     const SizedBox(height: 4),
+
                     const Text(
                       'KAUMO KIPONGO ROMANIE',
                       style: TextStyle(
@@ -110,14 +133,17 @@ class _LoginPageState extends State<LoginPage> {
                         fontWeight: FontWeight.w500,
                       ),
                     ),
+
                     const SizedBox(height: 24),
+
                     Card(
                       child: Padding(
                         padding: const EdgeInsets.all(22),
                         child: Form(
                           key: _formKey,
                           child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            crossAxisAlignment:
+                                CrossAxisAlignment.stretch,
                             children: [
                               const Text(
                                 'Connexion',
@@ -127,7 +153,9 @@ class _LoginPageState extends State<LoginPage> {
                                   color: AppColors.primaryDarkBlue,
                                 ),
                               ),
+
                               const SizedBox(height: 6),
+
                               const Text(
                                 'Connectez-vous pour accéder au CV, à la famille et aux contacts.',
                                 style: TextStyle(
@@ -135,20 +163,31 @@ class _LoginPageState extends State<LoginPage> {
                                   color: AppColors.textMuted,
                                 ),
                               ),
+
                               const SizedBox(height: 18),
+
                               CustomTextField(
                                 controller: _identifierController,
-                                labelText: 'Identifiant',
-                                hintText: 'Ex. romanie',
-                                prefixIcon: Icons.person_outline,
+                                labelText: 'Adresse e-mail',
+                                hintText: 'Ex. romanie@gmail.com',
+                                prefixIcon: Icons.email_outlined,
                                 validator: (value) {
-                                  if (value == null || value.trim().isEmpty) {
-                                    return 'L\'identifiant est obligatoire.';
+                                  if (value == null ||
+                                      value.trim().isEmpty) {
+                                    return 'L\'e-mail est obligatoire.';
                                   }
+
+                                  if (!value.contains('@') ||
+                                      !value.contains('.')) {
+                                    return 'Veuillez saisir un e-mail valide.';
+                                  }
+
                                   return null;
                                 },
                               ),
+
                               const SizedBox(height: 14),
+
                               CustomTextField(
                                 controller: _passwordController,
                                 labelText: 'Mot de passe',
@@ -157,7 +196,8 @@ class _LoginPageState extends State<LoginPage> {
                                 showVisibilityToggle: true,
                                 onToggleVisibility: () {
                                   setState(() {
-                                    _obscurePassword = !_obscurePassword;
+                                    _obscurePassword =
+                                        !_obscurePassword;
                                   });
                                 },
                                 textInputAction: TextInputAction.done,
@@ -166,18 +206,23 @@ class _LoginPageState extends State<LoginPage> {
                                   if (value == null || value.isEmpty) {
                                     return 'Le mot de passe est obligatoire.';
                                   }
+
                                   return null;
                                 },
                               ),
+
                               if (_errorMessage != null) ...[
                                 const SizedBox(height: 14),
+
                                 Container(
                                   padding: const EdgeInsets.all(12),
                                   decoration: BoxDecoration(
                                     color: const Color(0xFFFEF2F2),
-                                    borderRadius: BorderRadius.circular(10),
+                                    borderRadius:
+                                        BorderRadius.circular(10),
                                     border: Border.all(
-                                      color: AppColors.errorRed.withValues(alpha: 0.35),
+                                      color: AppColors.errorRed
+                                          .withValues(alpha: 0.35),
                                     ),
                                   ),
                                   child: Row(
@@ -187,7 +232,9 @@ class _LoginPageState extends State<LoginPage> {
                                         color: AppColors.errorRed,
                                         size: 20,
                                       ),
+
                                       const SizedBox(width: 8),
+
                                       Expanded(
                                         child: Text(
                                           _errorMessage!,
@@ -201,40 +248,61 @@ class _LoginPageState extends State<LoginPage> {
                                   ),
                                 ),
                               ],
+
                               const SizedBox(height: 20),
+
                               SizedBox(
                                 height: 48,
                                 child: FilledButton(
-                                  onPressed: _handleLogin,
+                                  onPressed:
+                                      _isLoading ? null : _handleLogin,
                                   style: FilledButton.styleFrom(
-                                    backgroundColor: AppColors.primaryDarkBlue,
+                                    backgroundColor:
+                                        AppColors.primaryDarkBlue,
                                     foregroundColor: AppColors.pureWhite,
                                     shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(12),
+                                      borderRadius:
+                                          BorderRadius.circular(12),
                                     ),
                                   ),
-                                  child: const Text(
-                                    'Se connecter',
-                                    style: TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w600,
-                                    ),
-                                  ),
+                                  child: _isLoading
+                                      ? const SizedBox(
+                                          width: 22,
+                                          height: 22,
+                                          child:
+                                              CircularProgressIndicator(
+                                            strokeWidth: 2,
+                                            color: AppColors.pureWhite,
+                                          ),
+                                        )
+                                      : const Text(
+                                          'Se connecter',
+                                          style: TextStyle(
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.w600,
+                                          ),
+                                        ),
                                 ),
                               ),
-                              const SizedBox(height: 14),
-                              Container(
-                                padding: const EdgeInsets.all(10),
-                                decoration: BoxDecoration(
-                                  color: AppColors.softLightBlue,
-                                  borderRadius: BorderRadius.circular(10),
-                                ),
+
+                              const SizedBox(height: 12),
+
+                              TextButton(
+                                onPressed: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) =>
+                                          const InscriptionPage(),
+                                    ),
+                                  );
+                                },
                                 child: const Text(
-                                  'Mode démonstration — Identifiant : romanie | Mot de passe : CvFlutter2026!',
+                                  'Vous n’avez pas de compte ? Créer un compte',
                                   textAlign: TextAlign.center,
                                   style: TextStyle(
-                                    fontSize: 12,
                                     color: AppColors.primaryDarkBlue,
+                                    fontWeight: FontWeight.w600,
                                   ),
                                 ),
                               ),

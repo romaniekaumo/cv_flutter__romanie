@@ -1,43 +1,81 @@
+
 import 'package:flutter/material.dart';
+
 import '../constants/app_colors.dart';
 import '../models/famille_model.dart';
 
 class FamilleCard extends StatelessWidget {
   final MembreFamille membre;
+  final VoidCallback onEdit;
   final VoidCallback onDelete;
 
   const FamilleCard({
     super.key,
     required this.membre,
+    required this.onEdit,
     required this.onDelete,
   });
 
   Widget _buildAvatar() {
-    final hasAsset =
-        membre.photoAssetPath != null && membre.photoAssetPath!.isNotEmpty;
-    if (!hasAsset) {
-      return const CircleAvatar(
+    // 1. Photo sélectionnée sur l'appareil
+    if (membre.photoBytes != null) {
+      return CircleAvatar(
         radius: 30,
-        backgroundColor: AppColors.softLightBlue,
-        child: Icon(Icons.person, color: AppColors.primaryDarkBlue, size: 30),
+        backgroundImage: MemoryImage(membre.photoBytes!),
       );
     }
 
-    return CircleAvatar(
-      radius: 30,
-      backgroundColor: AppColors.softLightBlue,
-      child: ClipOval(
-        child: Image.asset(
-          membre.photoAssetPath!,
-          width: 60,
-          height: 60,
-          fit: BoxFit.cover,
-          errorBuilder: (_, __, ___) => const Icon(
-            Icons.person,
-            color: AppColors.primaryDarkBlue,
-            size: 30,
+    // 2. Photo récupérée depuis le serveur PHP
+    if (membre.imageUrl != null && membre.imageUrl!.isNotEmpty) {
+      return CircleAvatar(
+        radius: 30,
+        backgroundColor: AppColors.softLightBlue,
+        child: ClipOval(
+          child: Image.network(
+            membre.imageUrl!,
+            width: 60,
+            height: 60,
+            fit: BoxFit.cover,
+            errorBuilder: (_, __, ___) => const Icon(
+              Icons.person,
+              color: AppColors.primaryDarkBlue,
+              size: 30,
+            ),
           ),
         ),
+      );
+    }
+
+    // 3. Ancienne photo locale
+    if (membre.photoAssetPath != null &&
+        membre.photoAssetPath!.isNotEmpty) {
+      return CircleAvatar(
+        radius: 30,
+        backgroundColor: AppColors.softLightBlue,
+        child: ClipOval(
+          child: Image.asset(
+            membre.photoAssetPath!,
+            width: 60,
+            height: 60,
+            fit: BoxFit.cover,
+            errorBuilder: (_, __, ___) => const Icon(
+              Icons.person,
+              color: AppColors.primaryDarkBlue,
+              size: 30,
+            ),
+          ),
+        ),
+      );
+    }
+
+    // 4. Avatar par défaut
+    return const CircleAvatar(
+      radius: 30,
+      backgroundColor: AppColors.softLightBlue,
+      child: Icon(
+        Icons.person,
+        color: AppColors.primaryDarkBlue,
+        size: 30,
       ),
     );
   }
@@ -58,7 +96,6 @@ class FamilleCard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Expanded(
                         child: Text(
@@ -69,6 +106,16 @@ class FamilleCard extends StatelessWidget {
                             color: AppColors.textDark,
                           ),
                         ),
+                      ),
+                      IconButton(
+                        onPressed: onEdit,
+                        tooltip: 'Modifier ce membre',
+                        icon: const Icon(
+                          Icons.edit_outlined,
+                          color: AppColors.primaryDarkBlue,
+                          size: 20,
+                        ),
+                        visualDensity: VisualDensity.compact,
                       ),
                       IconButton(
                         onPressed: onDelete,
@@ -101,38 +148,22 @@ class FamilleCard extends StatelessWidget {
                       ),
                     ),
                   ),
-                  if (membre.profession != null &&
-                      membre.profession!.isNotEmpty) ...[
-                    const SizedBox(height: 8),
-                    Text(
-                      'Profession : ${membre.profession}',
-                      style: const TextStyle(
-                        fontSize: 13,
-                        color: AppColors.textMuted,
-                      ),
+                  const SizedBox(height: 8),
+                  Text(
+                    'Lieu de naissance : ${membre.lieuNaissance}',
+                    style: const TextStyle(
+                      fontSize: 13,
+                      color: AppColors.textMuted,
                     ),
-                  ],
-                  if (membre.age != null) ...[
-                    const SizedBox(height: 2),
-                    Text(
-                      'Âge : ${membre.age} ans',
-                      style: const TextStyle(
-                        fontSize: 13,
-                        color: AppColors.textMuted,
-                      ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    'Date de naissance : ${membre.dateNaissance}',
+                    style: const TextStyle(
+                      fontSize: 13,
+                      color: AppColors.textMuted,
                     ),
-                  ],
-                  if (membre.description != null &&
-                      membre.description!.isNotEmpty) ...[
-                    const SizedBox(height: 6),
-                    Text(
-                      membre.description!,
-                      style: const TextStyle(
-                        fontSize: 13,
-                        color: AppColors.textDark,
-                      ),
-                    ),
-                  ],
+                  ),
                 ],
               ),
             ),

@@ -11,6 +11,8 @@ dependencies:
     sdk: flutter
   url_launcher: ^6.3.1
   google_fonts: ^6.3.2
+  http: ^1.6.0
+  image_picker: ^1.2.2
 
 dev_dependencies:
   flutter_test:

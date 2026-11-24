@@ -42,3 +42,7 @@ Emplacements des images
 ./pageAcceuil.png
 ./Competences.png
 ./Famille.png
+
+
+Emplacement de la vidéo de demontration du fonctionnement du TP
+./romanie_kaumo_mon_cv_video_demonstration.mp4

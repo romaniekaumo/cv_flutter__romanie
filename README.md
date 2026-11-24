@@ -46,3 +46,17 @@ Emplacements des images
 
 Emplacement de la vidéo de demontration du fonctionnement du TP
 ./romanie_kaumo_mon_cv_video_demonstration.mp4
+
+LES CAPTURES
+
+<img width="1366" height="768" alt="<img width="1366" height="768" alt="Famille" src="https://github.com/user-attachments/assets/42217d99-31ba-4610-86a4-3f6f97c67194" />
+<img width="1366" height="768" alt="Login" src="https://github.com/user-attachments/assets/b76e74d9-dde1-4d97-b11e-05f4fdc884a0" />
+page Acceuil" src="https://github.com/user-attachments/assets/43fe7473-bf5a-44da-b9f2-31bcdbf32b11" />
+<img width="1366" height="768" alt="Competences" src="https://github.com/user-attachments/assets/f3b53840-c628-4bab-ad38-e4d428dff44a" />
+<img width="1366" height="768" alt="page Acceuil" src="https://github.com/user-attachments/assets/627f08d9-00d8-42f6-8291-706a23e6c39b" />
+
+LA VIDEO
+https://github.com/user-attachments/assets/4c8ba43d-e777-4197-91b7-ecd7aedb1e88
+
+
+
